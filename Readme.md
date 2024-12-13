@@ -92,13 +92,13 @@ Swagger UI is available for exploring and testing the API. Visit http://localhos
 
 ### Project Structure
 **Backend**
- - src/controllers: Contains the logic for form, submission, and user routes.
- - src/models: Sequelize models for forms, submissions, and users.
- - src/routes: API route definitions.
- - src/server.ts: The entry point for the backend server.
+        - src/controllers: Contains the logic for form, submission, and user routes.
+        - src/models: Sequelize models for forms, submissions, and users.
+     - src/routes: API route definitions.
+     - src/server.ts: The entry point for the backend server.
 **Frontend**
- - src/components: React components for creating forms, viewing submissions, and the dashboard.
- - src/App.tsx: The main entry point for the frontend application.
+     - src/components: React components for creating forms, viewing submissions, and the dashboard.
+     - src/App.tsx: The main entry point for the frontend application.
 
 ### **Design Decisions**
  - No Authentication: The decision was made to simplify the process, and instead of using JWT or sessions, the application uses only a username to identify users.
