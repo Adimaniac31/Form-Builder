@@ -82,31 +82,31 @@ The backend server will be running on http://localhost:5000
 The frontend will be running on http://localhost:5173.
 
 ### **Database Setup**
-Create MySQL Database: Ensure that MySQL is running and create a database with the following name:
+ - Create MySQL Database: Ensure that MySQL is running and create a database with the following name:
 form_builder
 
-Sync Sequelize models: The models will be automatically synced with the database when the backend server starts.
+ - Sync Sequelize models: The models will be automatically synced with the database when the backend server starts.
 
 ### API Documentation
 Swagger UI is available for exploring and testing the API. Visit http://localhost:5000/api-docs to access the API documentation.
 
 ### Project Structure
-Backend
-src/controllers: Contains the logic for form, submission, and user routes.
-src/models: Sequelize models for forms, submissions, and users.
-src/routes: API route definitions.
-src/server.ts: The entry point for the backend server.
-Frontend
-src/components: React components for creating forms, viewing submissions, and the dashboard.
-src/App.tsx: The main entry point for the frontend application.
+**Backend**
+ - src/controllers: Contains the logic for form, submission, and user routes.
+ - src/models: Sequelize models for forms, submissions, and users.
+ - src/routes: API route definitions.
+ - src/server.ts: The entry point for the backend server.
+**Frontend**
+ - src/components: React components for creating forms, viewing submissions, and the dashboard.
+ - src/App.tsx: The main entry point for the frontend application.
 
 ### **Design Decisions**
-No Authentication: The decision was made to simplify the process, and instead of using JWT or sessions, the application uses only a username to identify users.
-Libraries:
-react-dnd: Used for drag-and-drop functionality in the form builder. This helps in rearranging fields easily.
-file-saver: For exporting submissions as a CSV file.
-Sequelize ORM: Used for interacting with the MySQL database due to its simplicity and flexibility with data models.
-Tailwind CSS: Used for styling the application. Tailwind CSS is a utility-first CSS framework that allows for quick and responsive design without writing custom CSS for each component. It makes it easy to maintain and adjust the design based on user feedback or design requirements.
+ - No Authentication: The decision was made to simplify the process, and instead of using JWT or sessions, the application uses only a username to identify users.
+ - Libraries:
+        - react-dnd: Used for drag-and-drop functionality in the form builder. This helps in rearranging fields easily.
+        - file-saver: For exporting submissions as a CSV file.
+ - Sequelize ORM: Used for interacting with the MySQL database due to its simplicity and flexibility with data models.
+ - Tailwind CSS: Used for styling the application. Tailwind CSS is a utility-first CSS framework that allows for quick and responsive design without writing custom CSS for each component. It makes it easy to maintain and adjust the design based on user feedback or design requirements.
 
 ## Database Structure
 
