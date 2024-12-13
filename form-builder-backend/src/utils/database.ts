@@ -1,5 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
 import { Form } from "../models/Form"; // Import models
+import { Submission } from "../models/Submission";
+import { User } from "../models/User";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file
@@ -17,7 +19,7 @@ const sequelize = new Sequelize({
   username: DB_USER,
   password: DB_PASSWORD,
   database: DB_NAME, // Set the database name here
-  models: [Form], // Include models
+  models: [Form, Submission, User], // Include models
   logging: false, // Optional: Disable Sequelize logging
 });
 
@@ -53,6 +55,9 @@ const checkAndCreateDatabase = async () => {
     // Now, reconnect with the actual database
     await sequelize.authenticate(); // Connect with the proper database (after ensuring it exists)
     console.log(`Connected to the '${DB_NAME}' database.`);
+
+    // Sync models to recreate tables in the database
+    console.log("Synchronizing models with the database...");
   } catch (error) {
     console.error("Error checking or creating the database:", error);
     process.exit(1); // Exit if database creation fails
@@ -61,6 +66,7 @@ const checkAndCreateDatabase = async () => {
 
 export default sequelize;
 export { checkAndCreateDatabase };
+
 
 
 

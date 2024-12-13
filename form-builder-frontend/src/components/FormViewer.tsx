@@ -15,8 +15,8 @@ const FormField: React.FC<any> = ({ field, formData, handleChange }) => {
           </label>
           <input
             type={field.type}
-            name={String(field.id)} // Unique name for each field
-            value={formData[field.id] || ""}
+            name={String(field.id)} // Use field.id as the name
+            value={formData[field.id]?.value || ""} // Store and retrieve the value
             onChange={handleChange}
             placeholder={field.placeholder || `Enter ${field.type}`}
             required={field.required}
@@ -33,8 +33,8 @@ const FormField: React.FC<any> = ({ field, formData, handleChange }) => {
           </label>
           <input
             type="checkbox"
-            name={String(field.id)} // Unique name for each checkbox
-            checked={formData[field.id] || false}
+            name={String(field.id)} // Use field.id as the name
+            checked={formData[field.id]?.value || false} // Store and retrieve the value
             onChange={handleChange}
             className="h-5 w-5 border-gray-300 rounded"
           />
@@ -53,7 +53,7 @@ const FormField: React.FC<any> = ({ field, formData, handleChange }) => {
                 type="radio"
                 name={String(field.id)} // Same name for all radios in this group
                 value={option}
-                checked={formData[field.id] === option} // Ensure only one radio button is checked in the group
+                checked={formData[field.id]?.value === option} // Ensure only one radio button is checked in the group
                 onChange={handleChange}
                 className="h-5 w-5 border-gray-300 rounded"
               />
@@ -69,8 +69,8 @@ const FormField: React.FC<any> = ({ field, formData, handleChange }) => {
             {field.label || "Untitled Field"}
           </label>
           <select
-            name={String(field.id)} // Unique name for each dropdown
-            value={formData[field.id] || ""}
+            name={String(field.id)} // Use field.id as the name
+            value={formData[field.id]?.value || ""}
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-md"
             required={field.required}
@@ -92,10 +92,19 @@ const FormField: React.FC<any> = ({ field, formData, handleChange }) => {
   }
 };
 
+
 const FormViewer: React.FC = () => {
+
+type FormData = {
+  [key: string]: {
+    label: string;
+    value: string | boolean | Date | null;
+  };
+};
+
   const { link } = useParams(); // The unique form identifier (UUID)
   const [form, setForm] = useState<any>(null);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<FormData>({});
   const [loading, setLoading] = useState<boolean>(true);
   const [submitted, setSubmitted] = useState<boolean>(false);
 
@@ -120,27 +129,37 @@ const FormViewer: React.FC = () => {
   // Handle changes to input fields
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
-    if (type === "checkbox" || type === "radio") {
-      // Handle checkbox and radio buttons correctly
-      setFormData({
-        ...formData,
-        [name]: type === "radio" ? value : checked, // For radio, store the value of the selected option
-      });
-    } else {
-      // Handle text, number, date, etc.
-      setFormData({
-        ...formData,
-        [name]: value, // Use value for text, number, date
-      });
+  
+    // Find the corresponding field object using the name (which is the field ID)
+    const field = form.fields.find((field: any) => field.id.toString() === name);
+  
+    // If the field is found, update formData with label and value
+    if (field) {
+      const updatedFieldData = {
+        label: field.label, // Store the label
+        value: type === "checkbox" || type === "radio" ? (type === "radio" ? value : checked) : value,
+      };
+  
+      // Update formData with the new field data
+      setFormData((prevFormData : FormData) => ({
+        ...prevFormData, // Spread the previous form data
+        [name]: updatedFieldData, // Use field ID as the key
+      }));
     }
   };
+  
+  
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Log the form data (you can send it to the backend here)
-    console.log("Form submitted:", formData);
-    setSubmitted(true); // Set submitted state to true
+    try {
+      const response = await axios.post(`http://localhost:5000/api/sub/${form.id}/submit`, formData);
+      console.log(response.data.message);
+      setSubmitted(true); // Show a success message
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
   };
 
   // Show loading state while the form is being fetched
@@ -162,6 +181,8 @@ const FormViewer: React.FC = () => {
           <FormField
             key={field.id}
             field={field}
+            label={field.label}
+            type={field.type}
             formData={formData}
             handleChange={handleChange}
           />
@@ -186,4 +207,5 @@ const FormViewer: React.FC = () => {
 };
 
 export default FormViewer;
+
 

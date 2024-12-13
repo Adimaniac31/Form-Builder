@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkAndCreateDatabase = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const Form_1 = require("../models/Form"); // Import models
+const Submission_1 = require("../models/Submission");
+const User_1 = require("../models/User");
 const dotenv_1 = __importDefault(require("dotenv"));
 // Load environment variables from .env file
 dotenv_1.default.config();
@@ -20,7 +22,7 @@ const sequelize = new sequelize_typescript_1.Sequelize({
     username: DB_USER,
     password: DB_PASSWORD,
     database: DB_NAME, // Set the database name here
-    models: [Form_1.Form], // Include models
+    models: [Form_1.Form, Submission_1.Submission, User_1.User], // Include models
     logging: false, // Optional: Disable Sequelize logging
 });
 // Function to check if the database exists, and if not, create it
@@ -48,6 +50,8 @@ const checkAndCreateDatabase = async () => {
         // Now, reconnect with the actual database
         await sequelize.authenticate(); // Connect with the proper database (after ensuring it exists)
         console.log(`Connected to the '${DB_NAME}' database.`);
+        // Sync models to recreate tables in the database
+        console.log("Synchronizing models with the database...");
     }
     catch (error) {
         console.error("Error checking or creating the database:", error);

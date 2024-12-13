@@ -5,7 +5,9 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "strict": true
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "strict": true,
+    "skipLibCheck": true
   }
 }
 

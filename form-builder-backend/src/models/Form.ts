@@ -1,11 +1,12 @@
-import { Table, Column, Model, PrimaryKey, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from "sequelize-typescript";
+import { User } from "./User";
 
-@Table
+@Table({ tableName: "Forms" })
 export class Form extends Model {
-  @PrimaryKey
   @Column({
-    type: DataType.UUID,
+    type: DataType.UUID, // Ensure UUID type
     defaultValue: DataType.UUIDV4,
+    primaryKey: true,
   })
   id!: string;
 
@@ -20,4 +21,11 @@ export class Form extends Model {
 
   @Column(DataType.STRING)
   shareableLink!: string;
+
+  @ForeignKey(() => User)
+  @Column({ type: DataType.UUID }) // Match the type with `User.id`
+  userId!: string;
+
+  @BelongsTo(() => User)
+  user!: User;
 }

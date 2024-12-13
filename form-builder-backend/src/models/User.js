@@ -9,26 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Submission = void 0;
+exports.User = void 0;
 const sequelize_typescript_1 = require("sequelize-typescript");
 const Form_1 = require("./Form");
-let Submission = class Submission extends sequelize_typescript_1.Model {
+let User = class User extends sequelize_typescript_1.Model {
 };
-exports.Submission = Submission;
+exports.User = User;
 __decorate([
-    (0, sequelize_typescript_1.ForeignKey)(() => Form_1.Form),
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.UUID, allowNull: false }),
+    (0, sequelize_typescript_1.Column)({
+        type: sequelize_typescript_1.DataType.UUID, // Ensure UUID type
+        defaultValue: sequelize_typescript_1.DataType.UUIDV4,
+        primaryKey: true,
+    }),
     __metadata("design:type", String)
-], Submission.prototype, "formId", void 0);
+], User.prototype, "id", void 0);
 __decorate([
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.JSON, allowNull: false }),
-    __metadata("design:type", Object)
-], Submission.prototype, "submissionData", void 0);
+    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.STRING, allowNull: false, unique: true }),
+    __metadata("design:type", String)
+], User.prototype, "username", void 0);
 __decorate([
-    sequelize_typescript_1.CreatedAt,
-    (0, sequelize_typescript_1.Column)({ type: sequelize_typescript_1.DataType.DATE }),
-    __metadata("design:type", Date)
-], Submission.prototype, "createdAt", void 0);
-exports.Submission = Submission = __decorate([
-    (0, sequelize_typescript_1.Table)({ tableName: "Submissions" })
-], Submission);
+    (0, sequelize_typescript_1.HasMany)(() => Form_1.Form),
+    __metadata("design:type", Array)
+], User.prototype, "forms", void 0);
+exports.User = User = __decorate([
+    (0, sequelize_typescript_1.Table)({ tableName: "Users" })
+], User);

@@ -7,10 +7,14 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const formRoutes_1 = __importDefault(require("./routes/formRoutes")); // Import the routes
+const submissionRoutes_1 = __importDefault(require("./routes/submissionRoutes"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
 const app = (0, express_1.default)();
 // Middleware setup
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json());
 // Set up form-related routes
 app.use("/api", formRoutes_1.default);
+app.use("/api/sub", submissionRoutes_1.default);
+app.use("/api/user", userRoutes_1.default);
 exports.default = app;

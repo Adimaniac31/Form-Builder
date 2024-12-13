@@ -1,20 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import FieldItem from "./FieldItem";
 import FieldEditor from "./FieldEditor";
-import axios from "axios";
 
-const FormBuilder: React.FC = () => {
+const EditFormPage: React.FC = () => {
+  const { formId } = useParams();
   const [fields, setFields] = useState<any[]>([]);
   const [selectedField, setSelectedField] = useState<number | null>(null);
-  const [formTitle, setFormTitle] = useState("Untitled Form");
-  const [formDescription, setFormDescription] = useState("");
-  const [shareableLink, setShareableLink] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [formTitle, setFormTitle] = useState<string>("");
+  const [formDescription, setFormDescription] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const userId = localStorage.getItem("userId"); // Retrieve userId from localStorage
+  useEffect(() => {
+    const fetchForm = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/findForm/${formId}`);
+        const { title, description, fields } = response.data.form;
+        setFormTitle(title);
+        setFormDescription(description);
+        setFields(fields || []);
+      } catch (error) {
+        console.error("Error fetching form:", error);
+        setErrorMessage("Failed to load form data.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Add new field
+    if (formId) fetchForm();
+  }, [formId]);
+
+  // Add a new field
   const addField = (type: string) => {
     const newField = {
       id: Date.now(),
@@ -27,18 +45,18 @@ const FormBuilder: React.FC = () => {
     setFields([...fields, newField]);
   };
 
-  // Remove field
+  // Remove a field
   const removeField = (id: number) => {
     setFields(fields.filter((field) => field.id !== id));
     if (selectedField === id) setSelectedField(null);
   };
 
-  // Update field properties
+  // Update a field
   const updateField = (id: number, updatedField: any) => {
     setFields(fields.map((field) => (field.id === id ? updatedField : field)));
   };
 
-  // Move field in the list
+  // Reorder fields
   const moveField = (dragIndex: number, hoverIndex: number) => {
     const draggedField = fields[dragIndex];
     const updatedFields = [...fields];
@@ -47,46 +65,30 @@ const FormBuilder: React.FC = () => {
     setFields(updatedFields);
   };
 
-  // Submit the form
-  const handleSubmit = async () => {
-    if (!formTitle || fields.length === 0) {
-      setErrorMessage("Form title and at least one field are required.");
-      return;
-    }
-
-    if (!userId) {
-      setErrorMessage("User not logged in. Please sign in again.");
-      return;
-    }
-
-    setLoading(true);
-    setErrorMessage(null); // Clear previous error
-
+  // Save changes to the form
+  const handleSave = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/create-form", {
+      await axios.put(`http://localhost:5000/api/edit-form/${formId}`, {
         title: formTitle,
         description: formDescription,
         fields,
-        userId, // Pass userId explicitly
       });
-
-      setShareableLink(response.data.form.shareableLink); // Get the shareable link
-      setFields([]); // Clear the fields
-      setFormTitle("Untitled Form");
-      setFormDescription(""); // Clear the description
-    } catch (error: any) {
-      console.error("Error creating form:", error);
-      setErrorMessage(error.response?.data?.message || "Error creating form. Please try again.");
-    } finally {
-      setLoading(false);
+      alert("Form updated successfully.");
+    } catch (error) {
+      console.error("Error saving form:", error);
+      alert("Failed to save form.");
     }
   };
 
+  if (loading) return <div className="text-center">Loading...</div>;
+
+  if (errorMessage) return <div className="text-center text-red-500">{errorMessage}</div>;
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6 bg-gray-100 min-h-screen">
-      {/* Left: Form Editor */}
+      {/* Left Panel: Form Editor */}
       <div className="flex-1 bg-white rounded-lg shadow p-6">
-        <h1 className="text-2xl font-bold text-primary mb-4">Form Builder</h1>
+        <h1 className="text-3xl font-bold text-primary mb-4">Edit Form</h1>
 
         {/* Error message */}
         {errorMessage && (
@@ -95,6 +97,7 @@ const FormBuilder: React.FC = () => {
           </div>
         )}
 
+        {/* Form Title and Description */}
         <div className="mb-4">
           <input
             type="text"
@@ -111,6 +114,7 @@ const FormBuilder: React.FC = () => {
           ></textarea>
         </div>
 
+        {/* Add Fields Buttons */}
         <div className="flex flex-wrap gap-2 mb-4">
           {["text", "number", "date", "checkbox", "dropdown", "radio"].map((type) => (
             <button
@@ -123,6 +127,7 @@ const FormBuilder: React.FC = () => {
           ))}
         </div>
 
+        {/* Field List */}
         <div className="space-y-2">
           {fields.map((field, index) => (
             <FieldItem
@@ -136,51 +141,32 @@ const FormBuilder: React.FC = () => {
           ))}
         </div>
 
+        {/* Save Button */}
         <div>
           <button
-            onClick={handleSubmit}
+            onClick={handleSave}
             className="w-48 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400"
-            disabled={loading || !formTitle}
           >
-            {loading ? "Saving..." : "Save Form"}
+            Save Changes
           </button>
-
-          {shareableLink && (
-            <div className="mt-4">
-              <h2 className="text-xl font-semibold">Shareable Link:</h2>
-              <input
-                type="text"
-                value={shareableLink}
-                readOnly
-                className="w-full p-2 mt-2 border border-gray-300 rounded-md"
-              />
-              <button
-                onClick={() => navigator.clipboard.writeText(shareableLink)}
-                className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-              >
-                Copy Link
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Right: Field Editor */}
+      {/* Right Panel: Field Editor */}
       <div className="w-full lg:w-1/3 bg-white rounded-lg shadow p-6">
         <h2 className="text-xl font-semibold text-secondary mb-4">Field Properties</h2>
         {selectedField !== null ? (
           <FieldEditor
             field={fields.find((f) => f.id === selectedField)}
-            updateField={(updatedField) =>
-              updateField(selectedField, updatedField)
-            }
+            updateField={(updatedField) => updateField(selectedField, updatedField)}
           />
         ) : (
-          <p className="text-gray-500">Select a field to edit its properties</p>
+          <p className="text-gray-500">Select a field to edit its properties.</p>
         )}
       </div>
     </div>
   );
 };
 
-export default FormBuilder;
+export default EditFormPage;
+
