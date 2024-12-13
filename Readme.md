@@ -42,13 +42,12 @@ Before running the application locally, make sure you have the following install
 
 Create a `.env` file in the backend folder with the following environment variables:
 
-    ```bash
         BASE_URL=http://localhost:5173
         DB_NAME=form_builder
         DB_USER=root
         DB_PASSWORD=password
         DB_HOST=localhost
-    ```
+    
 
 ### Frontend Dependencies:
 
@@ -79,7 +78,7 @@ The backend server will be running on http://localhost:5000
     ```bash
     npm run dev
     ```
-    
+
 The frontend will be running on http://localhost:5173.
 
 ### **Database Setup**
