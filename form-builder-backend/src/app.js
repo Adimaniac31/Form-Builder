@@ -6,15 +6,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const formRoutes_1 = __importDefault(require("./routes/formRoutes")); // Import the routes
-const submissionRoutes_1 = __importDefault(require("./routes/submissionRoutes"));
-const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const formRoutes_1 = __importDefault(require("./routes/formRoutes")); // Import form routes
+const submissionRoutes_1 = __importDefault(require("./routes/submissionRoutes")); // Import submission routes
+const userRoutes_1 = __importDefault(require("./routes/userRoutes")); // Import user routes
 const app = (0, express_1.default)();
-// Middleware setup
+const port = process.env.PORT;
+// CORS Setup
 app.use((0, cors_1.default)());
+// Body Parser Middleware
 app.use(body_parser_1.default.json());
-// Set up form-related routes
-app.use("/api", formRoutes_1.default);
-app.use("/api/sub", submissionRoutes_1.default);
-app.use("/api/user", userRoutes_1.default);
+// Set up Swagger options
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Form Builder API",
+            version: "1.0.0",
+            description: "API documentation for the Form Builder application",
+        },
+        servers: [
+            {
+                url: "http://localhost:5000", // Update with actual server URL
+            },
+        ],
+    },
+    apis: ["./src/routes/*.ts"], // Path to the routes files that contain Swagger annotations
+};
+// Initialize Swagger JSDoc
+const swaggerSpec = (0, swagger_jsdoc_1.default)(swaggerOptions);
+// Serve Swagger UI on /api-docs route
+app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swaggerSpec));
+// Set up routes
+app.use("/api", formRoutes_1.default); // Form routes
+app.use("/api/sub", submissionRoutes_1.default); // Submission routes
+app.use("/api/user", userRoutes_1.default); // User routes
 exports.default = app;
