@@ -42,12 +42,13 @@ Before running the application locally, make sure you have the following install
 
 Create a `.env` file in the backend folder with the following environment variables:
 
-```makefile
-BASE_URL=http://localhost:5173
-DB_NAME=form_builder
-DB_USER=root
-DB_PASSWORD=password
-DB_HOST=localhost
+    ```makefile
+        BASE_URL=http://localhost:5173
+        DB_NAME=form_builder
+        DB_USER=root
+        DB_PASSWORD=password
+        DB_HOST=localhost
+    ```
 
 ### Frontend Dependencies:
 
@@ -57,13 +58,14 @@ DB_HOST=localhost
    ```bash
    cd form-builder-frontend
    npm install
-
+   ```
 ### Running the Project Locally
 Backend
 1. Start the backend server: Run the following command to start the backend server using npm start:
 
     ```bash
     npm start
+    ```
 
 This command will:
 
@@ -76,6 +78,7 @@ Frontend
 
     ```bash
     npm run dev
+    ```
 The frontend will be running on http://localhost:5173.
 
 ### **Database Setup**
